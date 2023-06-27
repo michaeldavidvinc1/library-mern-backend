@@ -1,28 +1,18 @@
 const { StatusCodes } = require("http-status-codes");
 const {
-  getAllCategories,
-  createCategories,
-  getOneCategories,
-  updateCategories,
-  deleteCategories,
-} = require("../../../services/mongoose/categories");
+  getAllBooks,
+  createBook,
+  getOneBook,
+  updateBook,
+  deleteBook,
+} = require("../../../services/mongoose/books");
 
 const index = async (req, res, next) => {
   try {
-    const result = await getAllCategories(req);
-    res.status(StatusCodes.OK).json({
-      data: { category: result.data, pages: result.pages, total: result.total },
-    });
-  } catch (err) {
-    next(err);
-  }
-};
+    const result = await getAllBooks(req);
 
-const create = async (req, res, next) => {
-  try {
-    const result = await createCategories(req);
-    res.status(StatusCodes.CREATED).json({
-      data: result,
+    res.status(StatusCodes.OK).json({
+      data: { book: result.book, pages: result.pages, total: result.total },
     });
   } catch (err) {
     next(err);
@@ -31,9 +21,19 @@ const create = async (req, res, next) => {
 
 const find = async (req, res, next) => {
   try {
-    const result = await getOneCategories(req);
-
+    const result = await getOneBook(req);
     res.status(StatusCodes.OK).json({
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const create = async (req, res, next) => {
+  try {
+    const result = await createBook(req);
+    res.status(StatusCodes.CREATED).json({
       data: result,
     });
   } catch (err) {
@@ -43,8 +43,7 @@ const find = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const result = await updateCategories(req);
-
+    const result = await updateBook(req);
     res.status(StatusCodes.OK).json({
       data: result,
     });
@@ -55,7 +54,7 @@ const update = async (req, res, next) => {
 
 const destroy = async (req, res, next) => {
   try {
-    const result = await deleteCategories(req);
+    const result = await deleteBook(req);
     res.status(StatusCodes.OK).json({
       data: result,
     });

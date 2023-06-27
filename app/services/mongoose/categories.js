@@ -2,16 +2,20 @@ const Categories = require("../../api/v1/categories/model");
 const { BadRequestError, NotFoundError } = require("../../errors");
 
 const getAllCategories = async (req) => {
-  const { keyword } = req.query;
+  const { keyword, limit = 10, page = 1 } = req.query;
   let condition = {};
 
   if (keyword) {
-    condition = { ...condition, title: { $regex: keyword, $options: "i" } };
+    condition = { ...condition, name: { $regex: keyword, $options: "i" } };
   }
 
-  const result = await Categories.find(condition);
+  const result = await Categories.find(condition)
+    .limit(limit)
+    .skip(limit * (page - 1));
 
-  return result;
+  const count = await Categories.countDocuments(condition);
+
+  return { data: result, pages: Math.ceil(count / limit), total: count };
 };
 
 const getOneCategories = async (req) => {
@@ -33,7 +37,7 @@ const createCategories = async (req) => {
     name,
   });
 
-  if (check) throw new BadRequestError("kategori nama duplikat");
+  if (check) throw new BadRequestError("Cannot duplicated Category Name");
 
   const result = await Categories.create({
     name,
@@ -50,7 +54,7 @@ const updateCategories = async (req) => {
     _id: { $ne: id },
   });
 
-  if (check) throw new NotFoundError("kategori nama duplikat");
+  if (check) throw new NotFoundError("Cannot duplicated Category Name");
 
   const result = await Categories.findByIdAndUpdate(
     { _id: id },
@@ -58,7 +62,7 @@ const updateCategories = async (req) => {
     { new: true, runValidators: true }
   );
 
-  if (!result) throw new NotFoundError(`Tidak ada kategori dengan id ${id}`);
+  if (!result) throw new NotFoundError(`ID ${id} Category is not found`);
 
   return result;
 };
@@ -69,7 +73,7 @@ const deleteCategories = async (req) => {
     _id: id,
   });
 
-  if (!result) throw new NotFoundError(`Tidak ada kategori dengan id : ${id}`);
+  if (!result) throw new NotFoundError(`ID ${id} Category is not found`);
 
   await result.deleteOne();
 
@@ -81,7 +85,7 @@ const checkingCategories = async (id) => {
     _id: id,
   });
 
-  if (!result) throw new NotFoundError(`Tidak ada kategori dengan id : ${id}`);
+  if (!result) throw new NotFoundError(`ID ${id} Category is not found`);
 
   return result;
 };
