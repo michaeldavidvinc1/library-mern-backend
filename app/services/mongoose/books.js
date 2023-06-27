@@ -3,6 +3,7 @@ const BookCopy = require("../../api/v1/bookCopy/model");
 const { checkingCategories } = require("./categories");
 const { NotFoundError, BadRequestError } = require("../../errors");
 const { generateRandomString } = require("../../utils/generateRandomString");
+const { checkingImage } = require("./image");
 
 const getAllBooks = async (req) => {
   const { keyword, category, limit = 10, page = 1 } = req.query;
@@ -18,6 +19,10 @@ const getAllBooks = async (req) => {
 
   const result = await Books.find(condition)
     .populate({ path: "category", select: "_id name" })
+    .populate({
+      path: "image",
+      select: "_id name",
+    })
     .limit(limit)
     .skip(limit * (page - 1));
 
@@ -39,13 +44,22 @@ const getOneBook = async (req) => {
 };
 
 const createBook = async (req) => {
-  const { title, category, author, publisher, quantity, publication_date } =
-    req.body;
+  const {
+    title,
+    image,
+    category,
+    author,
+    publisher,
+    quantity,
+    publication_date,
+  } = req.body;
 
+  await checkingImage(image);
   await checkingCategories(category);
 
   const result = await Books.create({
     title,
+    image,
     category,
     author,
     publisher,

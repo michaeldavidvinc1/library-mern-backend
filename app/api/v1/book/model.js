@@ -8,6 +8,11 @@ const BookSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 50,
     },
+    image: {
+      type: mongoose.Types.ObjectId,
+      ref: "Image",
+      required: true,
+    },
     category: {
       type: mongoose.Types.ObjectId,
       ref: "Category",

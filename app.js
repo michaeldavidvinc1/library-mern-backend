@@ -8,6 +8,8 @@ var app = express();
 const categoriesRouter = require("./app/api/v1/categories/router");
 const bookRouter = require("./app/api/v1/book/router");
 const booksRouter = require("./app/api/v1/bookCopy/router");
+const imagesRouter = require("./app/api/v1/image/router");
+const userRouter = require("./app/api/v1/user/router");
 
 //! URL GLOBAL
 const handleErrorMiddleware = require("./app/middlewares/handle-error");
@@ -22,6 +24,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(`${v1}/cms`, categoriesRouter);
 app.use(`${v1}/cms`, bookRouter);
 app.use(`${v1}/cms`, booksRouter);
+app.use(`${v1}/cms`, imagesRouter);
+app.use(`${v1}/cms`, userRouter);
 
 app.use(handleErrorMiddleware);
 
