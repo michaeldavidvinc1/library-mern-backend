@@ -90,7 +90,7 @@ const signinMember = async (req) => {
 
   const token = createJWT({ payload: createTokenMember(result) });
 
-  return token;
+  return { token: token, data: result };
 };
 
 module.exports = {
