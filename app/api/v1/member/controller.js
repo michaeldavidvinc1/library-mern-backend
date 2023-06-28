@@ -1,4 +1,7 @@
-const { signupMember } = require("../../../services/mongoose/member");
+const {
+  signupMember,
+  activateMember,
+} = require("../../../services/mongoose/member");
 const { StatusCodes } = require("http-status-codes");
 
 const signup = async (req, res, next) => {
@@ -13,6 +16,19 @@ const signup = async (req, res, next) => {
   }
 };
 
+const activateAccount = async (req, res, next) => {
+  try {
+    const result = await activateMember(req);
+
+    res.status(StatusCodes.OK).json({
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   signup,
+  activateAccount,
 };
