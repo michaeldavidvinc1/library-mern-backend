@@ -65,7 +65,36 @@ const activateMember = async (req) => {
   return result;
 };
 
+const signinMember = async (req) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new BadRequestError("Please provide email and password");
+  }
+
+  const result = await Member.findOne({ email: email });
+
+  if (!result) {
+    throw new UnauthorizedError("Invalid Credentials");
+  }
+
+  if (result.status === "tidak aktif") {
+    throw new UnauthorizedError("Akun anda belum aktif");
+  }
+
+  const isPasswordCorrect = await result.comparePassword(password);
+
+  if (!isPasswordCorrect) {
+    throw new UnauthorizedError("Invalid Credentials");
+  }
+
+  const token = createJWT({ payload: createTokenMember(result) });
+
+  return token;
+};
+
 module.exports = {
   signupMember,
   activateMember,
+  signinMember,
 };
