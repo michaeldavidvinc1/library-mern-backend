@@ -12,6 +12,7 @@ const imagesRouter = require("./app/api/v1/image/router");
 const userRouter = require("./app/api/v1/user/router");
 const authCMSRouter = require("./app/api/v1/auth/router");
 const memberRouter = require("./app/api/v1/member/router");
+const borrowRouter = require("./app/api/v1/borrowiing/router");
 
 //! URL GLOBAL
 const handleErrorMiddleware = require("./app/middlewares/handle-error");
@@ -29,6 +30,7 @@ app.use(`${v1}/cms`, booksRouter);
 app.use(`${v1}/cms`, imagesRouter);
 app.use(`${v1}/cms`, userRouter);
 app.use(`${v1}/cms`, authCMSRouter);
+app.use(`${v1}/cms`, borrowRouter);
 app.use(v1, memberRouter);
 
 app.use(handleErrorMiddleware);

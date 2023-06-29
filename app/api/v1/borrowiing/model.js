@@ -16,6 +16,9 @@ let borrowingSchema = Schema(
     borrow_date: {
       type: Date,
     },
+    expired_date: {
+      type: Date,
+    },
     status: {
       type: String,
       enum: ["Approve", "Pending", "Canceled"],

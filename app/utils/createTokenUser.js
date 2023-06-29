@@ -8,7 +8,7 @@ const createTokenUser = (user) => {
 
 const createTokenMember = (member) => {
   return {
-    name: member.lastName,
+    name: member.name,
     memberId: member._id,
     email: member.email,
   };

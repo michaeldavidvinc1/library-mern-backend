@@ -125,4 +125,5 @@ module.exports = {
   getOneBook,
   updateBook,
   deleteBook,
+  checkingBook,
 };

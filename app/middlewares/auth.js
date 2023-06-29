@@ -44,10 +44,10 @@ const authenticateMember = async (req, res, next) => {
     }
 
     const payload = isTokenValid({ token });
-    req.participant = {
+    req.member = {
       email: payload.email,
       name: payload.name,
-      id: payload.participantId,
+      id: payload.memberId,
     };
     next();
   } catch (error) {
