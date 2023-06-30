@@ -1,5 +1,19 @@
 const { StatusCodes } = require("http-status-codes");
-const { returnBook } = require("../../../services/mongoose/return");
+const {
+  returnBook,
+  getAllReturn,
+} = require("../../../services/mongoose/return");
+
+const index = async (req, res, next) => {
+  try {
+    const result = await getAllReturn(req);
+    res.status(StatusCodes.OK).json({
+      data: { return: result.data, pages: result.pages, total: result.total },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const backBook = async (req, res, next) => {
   try {
@@ -14,4 +28,5 @@ const backBook = async (req, res, next) => {
 
 module.exports = {
   backBook,
+  index,
 };

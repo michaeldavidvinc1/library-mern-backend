@@ -8,9 +8,9 @@ let borrowingSchema = Schema(
       ref: "Member",
       required: true,
     },
-    book: {
+    book_copy: {
       type: mongoose.Types.ObjectId,
-      ref: "BookCopy",
+      ref: "Bookcopy",
       required: true,
     },
     borrow_date: {

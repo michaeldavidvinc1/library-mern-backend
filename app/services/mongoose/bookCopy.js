@@ -22,6 +22,9 @@ const getAllBookCopy = async (req) => {
   const result = await BookCopy.find({
     book: id,
     status: "Available",
+  }).populate({
+    path: "book",
+    select: "_id title",
   });
   return result;
 };

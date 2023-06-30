@@ -1,6 +1,6 @@
 const Borrow = require("../../api/v1/borrowiing/model");
 const { BadRequestError, NotFoundError } = require("../../errors");
-const { checkingBook } = require("./books");
+const { changeStatusBook } = require("./bookCopy");
 
 const getAllBorrow = async (req) => {
   const { limit = 10, page = 1, startDate, endDate } = req.query;
@@ -21,6 +21,12 @@ const getAllBorrow = async (req) => {
   }
 
   const result = await Borrow.find(condition)
+    .populate({ path: "member", select: "_id name" })
+    .populate({
+      path: "book_copy",
+      select: "slug",
+      populate: { path: "book", select: "_id title" },
+    })
     .limit(limit)
     .skip(limit * (page - 1));
 
@@ -30,7 +36,9 @@ const getAllBorrow = async (req) => {
 };
 
 const borrowBook = async (req) => {
-  const { book } = req.body;
+  const { book_copy } = req.body;
+
+  await changeStatusBook(book_copy);
 
   const borrow_date = new Date();
   const expired_date = new Date();
@@ -47,7 +55,7 @@ const borrowBook = async (req) => {
   if (pendingData.length === 0) {
     const result = await Borrow.create({
       member: req.member.id,
-      book,
+      book_copy,
       borrow_date: borrow_date,
       expired_date: expired_date,
     });

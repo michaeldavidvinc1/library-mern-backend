@@ -1,6 +1,8 @@
 const Return = require("../../../app/api/v1/return/model");
 const Borrow = require("../../../app/api/v1/borrowiing/model");
 const { BadRequestError, NotFoundError } = require("../../errors");
+const { changeStatusBook } = require("./bookCopy");
+const { createFine } = require("./fine");
 
 const getAllReturn = async (req) => {
   const { limit = 10, page = 1, startDate, endDate } = req.query;
@@ -20,11 +22,12 @@ const getAllReturn = async (req) => {
     };
   }
 
-  const result = await Borrow.find(condition)
+  const result = await Return.find(condition)
+    .populate({ path: "borrow", select: "_id expired_date" })
     .limit(limit)
     .skip(limit * (page - 1));
 
-  const count = await Borrow.countDocuments();
+  const count = await Return.countDocuments();
 
   return { data: result, pages: Math.ceil(count / limit), total: count };
 };
@@ -33,6 +36,7 @@ const returnBook = async (req) => {
   const { id } = req.params;
   const checkBorrow = await Borrow.findOne({ _id: id });
 
+  await changeStatusBook(checkBorrow.book);
   let status = "On Time";
 
   const return_date = new Date();
@@ -47,39 +51,17 @@ const returnBook = async (req) => {
     status: status,
   });
 
+  const timeDifference = return_date - checkBorrow.expired_date;
+  const daysPassed = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
+
+  if (result.status === "Late") {
+    await createFine(result._id, checkBorrow.member, daysPassed * 10000);
+  }
+
   return result;
 };
 
-const approveBorrow = async (req) => {
-  const { id } = req.params;
-  const checkBorrow = await Borrow.findOne({
-    _id: id,
-  });
-
-  if (checkBorrow.status === "Pending") {
-    checkBorrow.status = "Approve";
-  }
-  await checkBorrow.save();
-
-  return checkBorrow;
-};
-
-const cancelBorrow = async (req) => {
-  const { id } = req.params;
-  const checkBorrow = await Borrow.findOne({
-    _id: id,
-  });
-
-  if (checkBorrow.status === "Pending") {
-    checkBorrow.status = "Canceled";
-  }
-  await checkBorrow.save();
-
-  return checkBorrow;
-};
-
 module.exports = {
-  approveBorrow,
+  getAllReturn,
   returnBook,
-  cancelBorrow,
 };

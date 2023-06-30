@@ -21,4 +21,4 @@ const BookCopySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("BookCopy", BookCopySchema);
+module.exports = mongoose.model("Bookcopy", BookCopySchema);
