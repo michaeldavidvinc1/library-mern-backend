@@ -20,6 +20,7 @@ const getAllFine = async (req) => {
   }
 
   const result = await Fine.find(condition)
+    .populate({ path: "member", select: "_id name" })
     .limit(limit)
     .skip(limit * (page - 1));
 
@@ -37,7 +38,23 @@ const createFine = async (id, member, amount) => {
   return result;
 };
 
+const paying = async (req) => {
+  const { id } = req.params;
+
+  const checkFine = await Fine.findOne({
+    _id: id,
+  });
+
+  if (checkFine.status === "No Paid Off") {
+    checkFine.status = "Paid Off";
+  }
+  await checkFine.save();
+
+  return checkFine;
+};
+
 module.exports = {
   getAllFine,
   createFine,
+  paying,
 };
